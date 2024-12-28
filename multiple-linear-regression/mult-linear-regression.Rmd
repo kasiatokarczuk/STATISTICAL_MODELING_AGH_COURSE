@@ -1,0 +1,60 @@
+---
+title: "multiple linear regression"
+author: "Katarzyna Tokarczuk"
+date: "2024-05-08"
+output: pdf_document
+---
+
+## Task 1
+```{r}
+dane = read.delim("zanieczyszczenia.txt")
+head(dane)
+
+```
+
+
+## Task 2
+```{r}
+dane <- na.omit(dane)
+```
+
+## Task 3
+```{r}
+correlation_matrix <- cor(dane)
+print(correlation_matrix)
+dane <- dane[, !(names(dane) %in% c("hour"))] 
+
+```
+
+## Task 4
+```{r}
+model <- lm(TEMP ~ SO2 + NO2 + CO + O3, data = dane)
+#excluding Month and Day, and omitting PM2.5 and PM10 due to high correlation.
+```
+
+## Task 5
+```{r}
+#a)
+wspolczynniki <- coef(model)
+print(wspolczynniki)
+
+#b)
+RSS <- sum(model$residuals^2)
+RSE <- sqrt(RSS / (length(model$residuals) - length(wspolczynniki) - 1))
+R_squared <- summary(model)$r.squared
+
+RSS
+RSE
+R_squared
+
+summary(model)
+```
+
+## Task 6
+```{r}
+nowe_dane <- data.frame(SO2 = 25, NO2 = 90, CO = 2000, O3 = 50)
+predykcja <- predict(model, newdata = nowe_dane)
+print(predykcja)
+```
+
+
