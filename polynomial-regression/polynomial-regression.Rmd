@@ -1,0 +1,67 @@
+---
+title: "polynomial-regression"
+author: "Katarzyna Tokarczuk"
+date: "2024-04-24"
+output: pdf_document
+---
+
+## Task 1
+```{r}
+dane = read.delim("dane.txt")
+head(dane)
+
+library(ggplot2)
+wykres <- ggplot(dane, aes(x=X, y=Y)) +
+  geom_point(color="blue") +
+  labs(x="X", y="Y") 
+wykres
+```
+
+
+## Task 2
+```{r}
+model <- lm(Y ~ X, data=dane)
+summary(model)
+
+#a)
+blad <- paste(summary(model)[6])
+cat("Błąd między prognozą modelu a rzeczywistymi wynikami:", blad, "\n")
+
+#b)
+parametry <- coef(model)
+cat("Wyestymowane parametry modelu:",parametry,"\n")
+
+#c)
+r_squared <- summary(model)$r.squared
+cat("Wartość współczynnika R^2:", r_squared, "\n")
+#"Interpretacja: Około 79.5% zmienności w Y może być wyjaśnione przez zmienność w X, a pozostałe 20.5% zmienności w Y może być wynikiem innych czynników. Czyli nasz model jest dobrze dopasowany do danych"
+```
+
+## Task 3
+```{r}
+wykres + geom_smooth(method = "lm", se = FALSE, color = "red")
+```
+
+
+## Task 4 and 5
+```{r}
+for (i in 2:10) {
+  model <- lm(Y ~ poly(X, i, raw = TRUE), data = dane)
+  rse <- paste(summary(model)[6])
+  r_squared <- summary(model)$r.squared
+  wspolczynniki <- coef(model)
+  
+  dane$prognoza <- predict(model)
+  
+  wykres <- ggplot(dane, aes(x = X, y = Y)) +
+    geom_point(color = "blue") +  
+    geom_line(aes(y = prognoza), color = "red") +
+    labs(title = paste("Regresja wielomianowa stopnia", i), x = "X", y = "Y") 
+  
+  print(wykres)
+  cat("Stopień wielomianu:", i, "\n")
+  cat("Współczynniki regresji:", wspolczynniki, "\n")
+  cat("RSE:", rse, "\n")
+  cat("R^2:", r_squared, "\n")
+}
+```
