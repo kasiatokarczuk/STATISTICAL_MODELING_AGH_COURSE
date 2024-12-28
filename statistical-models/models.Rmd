@@ -1,0 +1,78 @@
+---
+title: "statistical models"
+author: "Katarzyna Tokarczuk"
+date: "2024-04-17"
+output: pdf_document
+---
+
+
+
+## Task 1
+```{r}
+library(mosaic)
+data(airquality)
+```
+
+## Task 2
+```{r}
+wartosc_brakujaca <- sum(is.na(airquality))
+wartosc_brakujaca
+```
+
+## Task 3
+```{r}
+dane <- na.omit(airquality)
+```
+
+## Task 4
+```{r}
+str(dane)
+```
+
+## Task 5
+```{r}
+boxplot(dane$Ozone, outline = FALSE)
+```
+
+## Task 6
+```{r}
+mosaic::mean(Ozone ~ Wind, data = dane)
+```
+
+
+### Task 7
+```{r}
+agg_srednia <- aggregate(Ozone ~ Wind, data = dane, FUN = mean)
+plot(agg_srednia$Wind, agg_srednia$Ozone, type = "b", xlab = "Wind", ylab = "Mean Ozone")
+
+```
+
+
+### Task 8
+```{r}
+dane <-mutate(dane, Temp = (dane$Temp - 32) * 5/9)
+```
+
+
+### Task 9
+```{r}
+#a)
+monthly_data <- split(dane, dane$Month)
+
+#b)
+wspol_regresji <- data.frame(Month = integer(), Intercept = numeric(), Slope = numeric(), R_squared = numeric())
+
+#c)
+for (i in names(monthly_data)) {
+  lm_model <- lm(Temp ~ Ozone, data = monthly_data[[i]])
+  Intercept <- coef(lm_model)[1]
+  Slope <- coef(lm_model)[2]
+  R_squared <- summary(lm_model)$r.squared
+  wspol_regresji[i, ] <- c(i, Intercept, Slope, R_squared)
+}
+
+wspol_regresji
+
+#d) Współczynnikiem determinacji dla każdego modelu jest zmienna R_squared
+
+```
